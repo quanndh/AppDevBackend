@@ -52,7 +52,6 @@ courseApiRouter.put("/:id", (req, res) => {
             .then(foundCourse => {
                 let ids = foundCourse.trainee;
                 ids.push(foundCourse.trainer);
-                console.log(ids)
                 userModel.updateMany({
                     '_id':{$in: ids}
                 })
