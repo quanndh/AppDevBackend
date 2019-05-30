@@ -41,13 +41,13 @@ courseApiRouter.put("/:id", (req, res) => {
         courseModel.update(
             {_id: req.params.id},
             {   
+                name: req.body.name,
                 topic: req.body.topic,
-                trainer: req.body.role,
+                trainer: req.body.trainer,
                 trainee: trainees
             }
-        )
+        ).then(savedCourse => res.status(200).send({success: 1, data: savedCourse}))
     })
-    .then(savedUser => res.status(200).send({success: 1, data: savedUser}))
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
