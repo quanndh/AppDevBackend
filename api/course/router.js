@@ -2,6 +2,7 @@ const express = require("express");
 const Router = express.Router;
 const courseApiRouter = Router();
 const courseModel = require("./model");
+const userModel = require("./model");
 
 courseApiRouter.post("/", (req, res) => {
     const {name, topic} = req.body;
@@ -46,7 +47,22 @@ courseApiRouter.put("/:id", (req, res) => {
                 trainer: req.body.trainer,
                 trainee: trainees
             }
-        ).then(savedCourse => res.status(200).send({success: 1, data: savedCourse}))
+        ).then(() => {
+            courseModel.findOne({_id: req.params.id})
+            .then(foundCourse => {
+                let ids = foundCourse.trainee;
+                ids.push(foundCourse.trainer);
+                console.log(ids)
+                userModel.updateMany({
+                    '_id':{$in: ids}
+                })
+                .then(users => res.send({data: users}))
+                .catch(err => console.log(err))
+            })
+            .catch(err => console.log(err))
+            
+        })
+
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
