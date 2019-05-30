@@ -3,10 +3,9 @@ const Router = express.Router;
 const courseApiRouter = Router();
 const courseModel = require("./model");
 const userModel = require("./model");
-
+//CREATE
 courseApiRouter.post("/", (req, res) => {
     const {name, topic} = req.body;
-
     let found = false;
     courseModel.find({name: name})
     .then(() => found = true)
@@ -20,13 +19,15 @@ courseApiRouter.post("/", (req, res) => {
             .catch(err => res.status(500).send({success: 0, message: err}))
     }
 })
-
+//READ
+//READ ALL
 courseApiRouter.get("/", (req, res) => {
     courseModel.find({})
         .then(courses => res.status(200).send({success: 1, data: courses}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
+//READ BY ID
 courseApiRouter.get("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id})
         .then(course => res.status(200).send({success: 1, data: course}))
@@ -34,6 +35,8 @@ courseApiRouter.get("/:id", (req, res) => {
 
 })
 
+//UPDATE
+//Add more trainee
 courseApiRouter.put("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id})
     .then(course => {
@@ -46,23 +49,7 @@ courseApiRouter.put("/:id", (req, res) => {
                 topic: req.body.topic,
                 trainer: req.body.trainer,
                 trainee: trainees
-            }
-        ).then(() => {
-            courseModel.findOne({_id: req.params.id})
-            .then(foundCourse => {
-                let ids = foundCourse.trainee;
-                ids.push(foundCourse.trainer);
-                console.log(ids)
-                userModel.updateMany({
-                    '_id':{$in: ids}
-                })
-                .then(users => res.send({data: users}))
-                .catch(err => console.log(err))
             })
-            .catch(err => console.log(err))
-            
-        })
-
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })

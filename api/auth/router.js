@@ -1,8 +1,6 @@
 const express = require("express");
-const Router = express.Router();
+const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
-const authRouter = Router;
-
 const userModel = require("../user/model");
 
 authRouter.post("/", (req, res) => {
@@ -37,7 +35,7 @@ authRouter.post("/", (req, res) => {
 
 authRouter.get("/me", (req, res) => {
     if(!req.session.user){
-        res.status(403).send({success: 0, message: ' unauthozied'})
+        res.status(403).send({success: 0, message: ' unauthorized'})
     } else {
         userModel.findById(req.session.user.id, "-password")
         .then(userFound => {
