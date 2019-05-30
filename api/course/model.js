@@ -6,7 +6,7 @@ const model = mongoose.model;
 const courseModel = new Schema({
     name: {type: String, require: true, unique: true},
     topic: {type: String, require: true, enum: ["AI", "Machine learning", "Robotics"]}, 
-    trainer: {type: Schema.Types.ObjectId, ref: "users", auto: true},
+    trainer: {type: Schema.Types.ObjectId, ref: "users", default: null},
     trainee: [{type: Schema.Types.ObjectId, ref: "users", default: []}]
 })
 
