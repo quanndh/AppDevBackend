@@ -50,6 +50,7 @@ courseApiRouter.put("/:id", (req, res) => {
                 trainer: req.body.trainer,
                 trainee: trainees
             })
+            .then(()=> res.status(200).send({success: 1}))
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
