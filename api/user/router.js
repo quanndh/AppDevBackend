@@ -30,6 +30,7 @@ userApiRouter.post("/", (req, res) => {
 //READ ALL
 userApiRouter.get("/", (req, res) => {
     userModel.find({})
+        .select("-password -__v")
         .then(users => res.status(200).send({success: 1, data: users}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
@@ -38,11 +39,13 @@ userApiRouter.get("/", (req, res) => {
 //READ ONE
 userApiRouter.get("/:id", (req, res) => {
     userModel.findOne({_id : req.params.id})
+        .select("-password -__v")
         .then(user => {
             if (user.role === "trainer"){
                 courseModel.find({
                     trainer: user._id
                 })
+                .select("-__v -trainer")
                 .then(courses =>{
                     res.send({data: user, courses: courses})
                 })
@@ -51,7 +54,9 @@ userApiRouter.get("/:id", (req, res) => {
             else if (user.role === "trainee"){
                 courseModel.find({
                     trainee: user._id
-                }).then(courses => {
+                })
+                .select("-__v")
+                .then(courses => {
                     res.send({data: user, courses: courses})
                 })
                 .catch(err => console.log(err))
@@ -59,6 +64,7 @@ userApiRouter.get("/:id", (req, res) => {
         })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
+
 //UPDATE PWD + ROLE
 userApiRouter.put("/:id", (req, res) => {
     const salt = bcrypt.genSaltSync(12);

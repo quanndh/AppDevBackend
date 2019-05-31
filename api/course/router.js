@@ -22,6 +22,9 @@ courseApiRouter.post("/", (req, res) => {
 //READ ALL
 courseApiRouter.get("/", (req, res) => {
     courseModel.find({})
+        .select("-__v")
+        .populate("trainer users", "-__v -password -role")
+        .populate("trainee users", "-__v -password -role")
         .then(courses => res.status(200).send({success: 1, data: courses}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
@@ -29,6 +32,8 @@ courseApiRouter.get("/", (req, res) => {
 //READ BY ID
 courseApiRouter.get("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id})
+        .populate("trainer users", "-__v -password -role")
+        .populate("trainee users", "-__v -password -role")
         .then(course => res.status(200).send({success: 1, data: course}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 
