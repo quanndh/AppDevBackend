@@ -4,7 +4,6 @@ const userApiRouter = Router();
 const userModel = require("./model");
 const bcrypt = require("bcryptjs");
 const courseModel = require("../course/model")
-
 //CREATE
 userApiRouter.post("/", (req, res) => {
     const {name, role, password} = req.body;
@@ -34,7 +33,6 @@ userApiRouter.get("/", (req, res) => {
         .then(users => res.status(200).send({success: 1, data: users}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
-
 
 //READ ONE
 userApiRouter.get("/:id", (req, res) => {
