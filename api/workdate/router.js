@@ -21,11 +21,13 @@ dateApiRouter.get('/:id', (req, res) => {
 
 //CREATE
 dateApiRouter.post("/", (req, res) => {
-    const {course, user} = req.query
+    const {courseId, userId} = req.query
     dateApiRouter.findOne({
-        course: course, user: user
+        course: courseId, user: userId
     })
-    .populate('users')
+    .then({
+        
+    })
 })
 
 module.exports = dateApiRouter;
