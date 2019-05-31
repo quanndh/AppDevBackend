@@ -6,7 +6,6 @@ const apiRouter = Router();
 const userApiRouter = require("./user/router");
 const authApiRouter = require("./auth/router");
 const courseApiRouter = require("./course/router");
-const dateApiRouter = require("./workdate/router")
 
 apiRouter.get("/", (req, res) => {
     res.send("hello");
@@ -19,7 +18,6 @@ apiRouter.use("/auth", authApiRouter);
 
 apiRouter.use("/courses", courseApiRouter);
 
-apiRouter.use("dates", dateApiRouter);
 
 // apiRouter.use((req, res, next) => {
 //     if(req.session.user){

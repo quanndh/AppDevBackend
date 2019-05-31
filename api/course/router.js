@@ -58,7 +58,25 @@ courseApiRouter.put("/:id", (req, res) => {
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
-
+//Add to calendar
+courseApiRouter.put("/:id/calendar", (req, res) => {
+    console.log("ID", req.params.id)
+    courseModel.findOne({_id: req.params.id})
+    .then(course => {
+        console.log("course: ", course)
+        let calendars = course.calendar
+        calendars.push({
+            date: req.body.date,
+            info: req.body.info
+        })
+        courseModel.update(
+            {_id: req.params.id},
+            {calendar: calendars}
+        )
+        .then(() => res.status(200).send({success: 1}))
+    }).catch(err => res.status(500).send({success: 0, message: err}))
+})
+//DELETE
 courseApiRouter.delete("/:id", (req, res) => {
     courseModel.deleteOne({_id: req.params.id})
     .then(() => {
