@@ -44,8 +44,8 @@ userApiRouter.get("/getcourse", (req, res) => {
         if (role === "trainer"){
             courseModel.find({
                 trainer: foundUser._id
-            }).then(courses =>{
-                res.send(courses)
+            }).then(course =>{
+                res.send({success: 1, data: course})
             })
             .catch(err => console.log(err))
         }
@@ -53,7 +53,7 @@ userApiRouter.get("/getcourse", (req, res) => {
             courseModel.find({
                 trainee: foundUser._id
             }).then(courses => {
-                res.send(courses)
+                res.send({success: 1, data: course})
             })
             .catch(err => console.log(err))
         }
