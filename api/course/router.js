@@ -2,7 +2,6 @@ const express = require("express");
 const Router = express.Router;
 const courseApiRouter = Router();
 const courseModel = require("./model");
-const userModel = require("./model");
 //CREATE
 courseApiRouter.post("/", (req, res) => {
     const {name, topic} = req.body;

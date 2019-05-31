@@ -33,38 +33,28 @@ userApiRouter.get("/", (req, res) => {
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
-//READ COURSES OF USER
-userApiRouter.get("/getcourse", (req, res) => {
-    console.log(req.query.userId)
-    userModel.findOne({_id: req.query.userId})
-    .then(foundUser =>{
-        let role = foundUser.role
-        console.log(role)
-        console.log(foundUser._id)
-        if (role === "trainer"){
-            courseModel.find({
-                trainer: foundUser._id
-            }).then(courses =>{
-                res.send(courses)
-            })
-            .catch(err => console.log(err))
-        }
-        else if (role === "trainee"){
-            courseModel.find({
-                trainee: foundUser._id
-            }).then(courses => {
-                res.send(courses)
-            })
-            .catch(err => console.log(err))
-        }
-    })
-    .catch(err => res.status(500).send({success: 0, message: err}))
-})
-
 //READ ONE
 userApiRouter.get("/:id", (req, res) => {
     userModel.findOne({_id : req.params.id})
-        .then(user => res.status(200).send({success: 1, data: user}))
+        .then(user => {
+            if (user.role === "trainer"){
+                courseModel.find({
+                    trainer: user._id
+                })
+                .then(courses =>{
+                    res.send({data: user, courses: courses})
+                })
+                .catch(err => console.log(err))
+            }
+            else if (user.role === "trainee"){
+                courseModel.find({
+                    trainee: user._id
+                }).then(courses => {
+                    res.send({data: user, courses: courses})
+                })
+                .catch(err => console.log(err))
+            } else res.status(200).send({success: 1, data: user})
+        })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 //UPDATE PWD + ROLE
