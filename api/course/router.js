@@ -31,7 +31,7 @@ courseApiRouter.get("/", (req, res) => {
 
 //READ BY ID
 courseApiRouter.get("/:id", (req, res) => {
-    courseModel.findOne({_id : req.params.id})
+    courseModel.findOne({_id : req.params.id}).select("-__v")
         .populate("trainer users", "-__v -password -role")
         .populate("trainee users", "-__v -password -role")
         .then(course => res.status(200).send({success: 1, data: course}))

@@ -45,20 +45,49 @@ userApiRouter.get("/:id", (req, res) => {
                 })
                 .select("-__v -trainer")
                 .then(courses =>{
-                    res.send({data: user, courses: courses})
+                    let traineeCount = 0;
+                    for (var i = 0; i < courses.length; i ++){
+                        traineeCount += courses[i].trainee.length
+                    }
+                    res.send({coursesCount: courses.length, traineeCount: traineeCount, courses: courses, data: user})
                 })
                 .catch(err => console.log(err))
             }
-            else if (user.role === "trainee"){
-                courseModel.find({
-                    trainee: user._id
+            else if (user.role === "admin"){
+               userModel.find({
+                   role:{$in:['trainer', 'staff']}
+               })
+               .then(users => {
+                   let trainerCount = 0;
+                   let staffCount = 0;
+                   for (var i = 0; i < users.length; i++){
+                       if (users[i].role == 'staff'){
+                           staffCount += 1
+                       }
+                       else trainerCount += 1
+                   }
+                   res.send({staffCount: staffCount, trainerCount: trainerCount, data: user})
+               })
+               .catch(err => console.log(err))
+            }
+            else if (user.role === "staff"){
+                userModel.find({
+                    role:{$in:['trainer', 'trainee']}
                 })
-                .select("-__v")
-                .then(courses => {
-                    res.send({data: user, courses: courses})
+                .then(users => {
+                    let trainerCount = 0;
+                    let traineeCount = 0;
+                    for (var i = 0; i < users.length; i++){
+                        if (users[i].role == 'trainer'){
+                            trainerCount += 1
+                        }
+                        else traineeCount += 1
+                    }
+                    res.send({trainerCount: trainerCount, traineeCount: traineeCount, data: user})
                 })
                 .catch(err => console.log(err))
-            } else res.status(200).send({success: 1, data: user})
+            }
+             else res.status(200).send({success: 1, data: user})
         })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
