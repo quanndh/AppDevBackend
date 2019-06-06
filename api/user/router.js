@@ -34,63 +34,74 @@ userApiRouter.get("/", (req, res) => {
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
+
+
 //READ ONE
 userApiRouter.get("/:id", (req, res) => {
     userModel.findOne({_id : req.params.id})
         .select("-password -__v")
         .then(user => {
-            if (user.role === "trainer"){
-                courseModel.find({
-                    trainer: user._id
-                })
-                .select("-__v -trainer")
-                .then(courses =>{
-                    let traineeCount = 0;
-                    for (var i = 0; i < courses.length; i ++){
-                        traineeCount += courses[i].trainee.length
-                    }
-                    res.send({coursesCount: courses.length, traineeCount: traineeCount, courses: courses, data: user})
-                })
-                .catch(err => console.log(err))
-            }
-            else if (user.role === "admin"){
-               userModel.find({
-                   role:{$in:['trainer', 'staff']}
-               })
-               .then(users => {
-                   let trainerCount = 0;
-                   let staffCount = 0;
-                   for (var i = 0; i < users.length; i++){
-                       if (users[i].role == 'staff'){
-                           staffCount += 1
-                       }
-                       else trainerCount += 1
-                   }
-                   res.send({staffCount: staffCount, trainerCount: trainerCount, data: user})
-               })
-               .catch(err => console.log(err))
-            }
-            else if (user.role === "staff"){
-                userModel.find({
-                    role:{$in:['trainer', 'trainee']}
-                })
-                .then(users => {
-                    let trainerCount = 0;
-                    let traineeCount = 0;
-                    for (var i = 0; i < users.length; i++){
-                        if (users[i].role == 'trainer'){
-                            trainerCount += 1
-                        }
-                        else traineeCount += 1
-                    }
-                    res.send({trainerCount: trainerCount, traineeCount: traineeCount, data: user})
-                })
-                .catch(err => console.log(err))
-            }
-             else res.status(200).send({success: 1, data: user})
+            res.status(200).send({success: 1, data: user})
         })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
+//READ TRAINER COURSES
+userApiRouter.get("/trainer/:id", (req, res) => {
+    console.log(req.params.id)
+    courseModel.find({
+        trainer: req.params.id
+    })
+    .select("-__v -trainer")
+    .then(courses =>{
+        let traineeCount = 0;
+        for (var i = 0; i < courses.length; i ++){
+            traineeCount += courses[i].trainee.length
+        }
+        res.send({coursesCount: courses.length, traineeCount: traineeCount, courses: courses})
+    })
+    .catch(err => res.status(500).send({success: 0, message: err}))
+})
+
+userApiRouter.get("/role/:role", (req, res) => {
+    const role = req.params.role
+    if (role === "admin"){
+        userModel.find({
+            role:{$in:['trainer', 'staff']}
+        })
+        .then(users => {
+            let trainerCount = 0;
+            let staffCount = 0;
+            for (var i = 0; i < users.length; i++){
+                if (users[i].role == 'staff'){
+                    staffCount += 1
+                }
+                else trainerCount += 1
+            }
+            res.send({staffCount: staffCount, trainerCount: trainerCount})
+        })
+        .catch(err => console.log(err))
+     }
+     else if (role === "staff"){
+         userModel.find({
+             role:{$in:['trainer', 'trainee']}
+         })
+         .then(users => {
+             let trainerCount = 0;
+             let traineeCount = 0;
+             for (var i = 0; i < users.length; i++){
+                 if (users[i].role == 'trainer'){
+                     trainerCount += 1
+                 }
+                 else traineeCount += 1
+             }
+             res.send({trainerCount: trainerCount, traineeCount: traineeCount})
+         })
+         .catch(err => console.log(err))
+     }
+     else res.send({role: role})
+})
+
+
 
 //UPDATE PWD + ROLE
 userApiRouter.put("/:id", (req, res) => {
