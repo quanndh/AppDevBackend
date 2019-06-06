@@ -20,7 +20,7 @@ authRouter.post("/", (req, res) => {
                     }
                     req.session.user = user;
                     
-                    res.send({success: 1});
+                    res.send({success: 1, role: userFound.role});
                     // res.redirect("http://localhost:3000/");
                 } else {
                     res.status(401).send({success: 0, message: "Wrong name or password"});
