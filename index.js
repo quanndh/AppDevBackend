@@ -10,6 +10,10 @@ mongoose.connect("mongodb+srv://admin:admin@cluster0-dsb6n.mongodb.net/TrainingF
     if(err) console.log(err);
     else console.log("Connected");
 })
+// mongoose.connect('mongodb://localhost:27017/TrainingFPT', {useNewUrlParser: true}, err => {
+//     if (err) console.log(err);
+//     else console.log("Connected");
+// });
 
 app.use(session({
   secret: "ahihi",
