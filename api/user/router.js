@@ -46,24 +46,9 @@ userApiRouter.get("/:id", (req, res) => {
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 //READ TRAINER COURSES
-userApiRouter.get("/trainer/:id", (req, res) => {
-    console.log(req.params.id)
-    courseModel.find({
-        trainer: req.params.id
-    })
-    .select("-__v -trainer")
-    .then(courses =>{
-        let traineeCount = 0;
-        for (var i = 0; i < courses.length; i ++){
-            traineeCount += courses[i].trainee.length
-        }
-        res.send({coursesCount: courses.length, traineeCount: traineeCount, courses: courses})
-    })
-    .catch(err => res.status(500).send({success: 0, message: err}))
-})
 
-userApiRouter.get("/role/:role", (req, res) => {
-    const role = req.params.role
+userApiRouter.get("/role/:role/", (req, res) => {
+    const role = req.params.role    
     if (role === "admin"){
         userModel.find({
             role:{$in:['trainer', 'staff']}
@@ -71,7 +56,7 @@ userApiRouter.get("/role/:role", (req, res) => {
         .then(users => {
             let trainerCount = 0;
             let staffCount = 0;
-            for (var i = 0; i < users.length; i++){
+            for (let i = 0; i < users.length; i++){
                 if (users[i].role == 'staff'){
                     staffCount += 1
                 }
@@ -88,7 +73,7 @@ userApiRouter.get("/role/:role", (req, res) => {
          .then(users => {
              let trainerCount = 0;
              let traineeCount = 0;
-             for (var i = 0; i < users.length; i++){
+             for (let i = 0; i < users.length; i++){
                  if (users[i].role == 'trainer'){
                      trainerCount += 1
                  }
@@ -98,7 +83,20 @@ userApiRouter.get("/role/:role", (req, res) => {
          })
          .catch(err => console.log(err))
      }
-     else res.send({role: role})
+     else if (role === "trainer"){
+        courseModel.find({
+            trainer: req.query.id
+        })
+        .select("-__v -trainer")
+        .then(courses =>{
+            let traineeCount = 0;
+            for (let i = 0; i < courses.length; i ++){
+                traineeCount += courses[i].trainee.length
+            }
+            res.send({coursesCount: courses.length, traineeCount: traineeCount, courses: courses})
+        })
+        .catch(err => res.status(500).send({success: 0, message: err}))
+     }
 })
 
 
