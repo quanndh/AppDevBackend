@@ -45,7 +45,9 @@ courseApiRouter.put("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id})
     .then(course => {
         let trainees = course.trainee;
-        trainees.push(req.body.trainee)
+        for (var i = 0; i < req.body.trainee.length; i ++){
+            trainees.push(req.body.trainee[i])
+        }
         courseModel.update(
             {_id: req.params.id},
             {   
