@@ -53,6 +53,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
         userModel.find({
             role:{$in:['trainer', 'staff']}
         })
+        .select("-password -__v")
         .then(users => {
             let trainerCount = 0;
             let staffCount = 0;
@@ -62,7 +63,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
                 }
                 else trainerCount += 1
             }
-            res.send({staffCount: staffCount, trainerCount: trainerCount})
+            res.send({user: users,staffCount: staffCount, trainerCount: trainerCount})
         })
         .catch(err => console.log(err))
      }
