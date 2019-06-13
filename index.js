@@ -25,15 +25,15 @@ app.use(session({
   }
 }))
 
-app.use(cors({ origin: ["https://herokuapp.com"], credentials: true }))
+app.use(cors({ origin: ["http://localhost:3000"], credentials: true }))
 
 
 app.use(bdParser.urlencoded({extended:false}))
 app.use(bdParser.json());
 
 app.use("/api", apiRouter);
-app.listen(process.env.PORT || 6969, function(err){
-    if (err) console.log(err)
-    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-  });
+app.listen(process.env.PORT || 6969 , err => {
+    if(err) console.log(err);
+    else console.log("Server start 6969")
+})
     
