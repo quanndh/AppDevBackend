@@ -45,6 +45,7 @@ userApiRouter.get("/:id", (req, res) => {
         })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
+
 //READ TRAINER COURSES
 
 userApiRouter.get("/role/:role/", (req, res) => {
@@ -62,7 +63,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
                 }
                 else trainerCount += 1
             }
-            res.send({staffCount: staffCount, trainerCount: trainerCount})
+            res.send({user: users, staffCount: staffCount, trainerCount: trainerCount})
         })
         .catch(err => console.log(err))
      }
