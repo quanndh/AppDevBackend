@@ -54,6 +54,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
         userModel.find({
             role:{$in:['trainer', 'staff']}
         })
+        .select("-password -__v")
         .then(users => {
             let trainerCount = 0;
             let staffCount = 0;
@@ -63,7 +64,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
                 }
                 else trainerCount += 1
             }
-            res.send({user: users, staffCount: staffCount, trainerCount: trainerCount})
+            res.send({user: users,staffCount: staffCount, trainerCount: trainerCount})
         })
         .catch(err => console.log(err))
      }
@@ -121,7 +122,12 @@ userApiRouter.put("/:id", (req, res) => {
 userApiRouter.delete("/:id", (req, res) => {
     userModel.deleteOne({_id: req.params.id})
     .then(() => {
-        res.status(200).send({success: 1})
+        userModel.find({
+            role:{$in:['trainer', 'staff']}
+        })
+        .select("-password -__v")
+        .then(users => res.status(200).send({success: 1, data: users}))
+        .catch(err => res.status(500).send({success: 0, message: err}))
     })
     .catch((err) => {
         res.status(500).send({success: 0})
