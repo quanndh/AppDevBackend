@@ -45,6 +45,7 @@ userApiRouter.get("/:id", (req, res) => {
         })
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
+
 //READ TRAINER COURSES
 
 userApiRouter.get("/role/:role/", (req, res) => {

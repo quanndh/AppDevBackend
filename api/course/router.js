@@ -39,6 +39,8 @@ courseApiRouter.get("/:id", (req, res) => {
 
 })
 
+ 
+
 //UPDATE
 //Add more trainee
 courseApiRouter.put("/:id", (req, res) => {
