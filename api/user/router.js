@@ -104,16 +104,16 @@ userApiRouter.get("/role/:role/", (req, res) => {
 
 //UPDATE PWD + ROLE
 userApiRouter.put("/:id", (req, res) => {
-    const salt = bcrypt.genSaltSync(12);
-    const hashPw = bcrypt.hashSync(req.body.password, salt);
-    userModel.update(
+    userModel.findOneAndUpdate(
         {_id: req.params.id},
-        {   
-            password: hashPw,
+        { 
+            name: req.body.name,
             role: req.body.role
         }
     )
-    .then(savedUser => res.status(200).send({success: 1, data: savedUser}))
+    .then(foundUser => {
+        res.status(200).send({success: 0, data: foundUser})
+    })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
