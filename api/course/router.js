@@ -4,7 +4,7 @@ const courseApiRouter = Router();
 const courseModel = require("./model");
 //CREATE
 courseApiRouter.post("/", (req, res) => {
-    const {name, topic} = req.body;
+    const {name, topic, trainer} = req.body;
     let found = false;
     courseModel.find({name: name})
     .then(() => found = true)
@@ -13,9 +13,11 @@ courseApiRouter.post("/", (req, res) => {
     if(found){
         res.status(401).send({success: 0, message: "Name is taken"})
     } else {
-        courseModel.create({name, topic })
-            .then(createdCourse => res.status(200).send({success: 1, data: createdCourse}))
-            .catch(err => res.status(500).send({success: 0, message: err}))
+        courseModel.create({name, topic, trainer})
+        .then(createdCourse => {
+            res.status(200).send({success: 1, data: createdCourse})
+        })
+        .catch(err => res.status(500).send({success: 0, message: err}))
     }
 })
 //READ
@@ -50,7 +52,7 @@ courseApiRouter.put("/:id", (req, res) => {
         for (var i = 0; i < req.body.trainee.length; i ++){
             trainees.push(req.body.trainee[i])
         }
-        courseModel.update(
+        courseModel.updateOne(
             {_id: req.params.id},
             {   
                 name: req.body.name,
@@ -58,7 +60,7 @@ courseApiRouter.put("/:id", (req, res) => {
                 trainer: req.body.trainer,
                 trainee: trainees
             })
-            .then(()=> res.status(200).send({success: 1}))
+            .then(()=> res.status(200).send({success: 1, trainer: course.trainer, trainee: trainees}))
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
@@ -84,7 +86,12 @@ courseApiRouter.put("/:id/calendar", (req, res) => {
 courseApiRouter.delete("/:id", (req, res) => {
     courseModel.deleteOne({_id: req.params.id})
     .then(() => {
-        res.status(200).send({success: 1})
+        courseModel.find({})
+        .select("-__v")
+        .populate("trainer users", "-__v -password -role")
+        .populate("trainee users", "-__v -password -role")
+        .then(courses => res.status(200).send({success: 1, data: courses}))
+        .catch(err => res.status(500).send({success:0 , message: err}))
     })
     .catch((err) => {
         res.status(500).send({success: 0})

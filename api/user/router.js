@@ -46,6 +46,13 @@ userApiRouter.get("/:id", (req, res) => {
         .catch(err => res.status(500).send({success: 0, message: err}))
 })
 
+userApiRouter.get("/select/:role", (req, res) => {
+    userModel.find({role: req.params.role})
+    .select("-password -__v")
+    .then(users => res.status(200).send({success: 1, data: users}))
+    .catch(err => res.status(500).send({success:0, message: err}))
+})
+
 //READ TRAINER COURSES
 
 userApiRouter.get("/role/:role/", (req, res) => {
@@ -72,6 +79,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
          userModel.find({
              role:{$in:['trainer', 'trainee']}
          })
+         .select("-password -__v")
          .then(users => {
              let trainerCount = 0;
              let traineeCount = 0;
@@ -81,7 +89,7 @@ userApiRouter.get("/role/:role/", (req, res) => {
                  }
                  else traineeCount += 1
              }
-             res.send({trainerCount: trainerCount, traineeCount: traineeCount})
+             res.send({user: users, trainerCount: trainerCount, traineeCount: traineeCount})
          })
          .catch(err => console.log(err))
      }
@@ -119,15 +127,25 @@ userApiRouter.put("/:id", (req, res) => {
 })
 
 //DELETE
-userApiRouter.delete("/:id", (req, res) => {
+userApiRouter.delete("/:id/:role", (req, res) => {
     userModel.deleteOne({_id: req.params.id})
     .then(() => {
-        userModel.find({
+        if(req.params.role === "admin"){
+            userModel.find({
             role:{$in:['trainer', 'staff']}
-        })
-        .select("-password -__v")
-        .then(users => res.status(200).send({success: 1, data: users}))
-        .catch(err => res.status(500).send({success: 0, message: err}))
+            })
+            .select("-password -__v")
+            .then(users => res.status(200).send({success: 1, data: users}))
+            .catch(err => res.status(500).send({success: 0, message: err}))
+        } else {
+            userModel.find({
+            role:{$in:['trainer', 'trainee']}
+            })
+            .select("-password -__v")
+            .then(users => res.status(200).send({success: 1, data: users}))
+            .catch(err => res.status(500).send({success: 0, message: err}))
+        }
+        
     })
     .catch((err) => {
         res.status(500).send({success: 0})
