@@ -34,8 +34,8 @@ courseApiRouter.get("/", (req, res) => {
 //READ BY ID
 courseApiRouter.get("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id}).select("-__v")
-        .populate("trainer users", "-__v -password -role")
-        .populate("trainee users", "-__v -password -role")
+        .populate("trainer users", "-__v -password -role -course")
+        .populate("trainee users", "-__v -password -role -course")
         .then(course => res.status(200).send({success: 1, data: course}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 
@@ -48,19 +48,19 @@ courseApiRouter.get("/:id", (req, res) => {
 courseApiRouter.put("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id})
     .then(course => {
-        let trainees = course.trainee;
-        for (var i = 0; i < req.body.trainee.length; i ++){
-            trainees.push(req.body.trainee[i])
-        }
+        // let trainees = course.trainee;
+        // for (var i = 0; i < req.body.trainee.length; i ++){
+        //     trainees.push(req.body.trainee[i])
+        // }
         courseModel.updateOne(
             {_id: req.params.id},
             {   
                 name: req.body.name,
                 topic: req.body.topic,
                 trainer: req.body.trainer,
-                trainee: trainees
+                trainee: req.body.trainee
             })
-            .then(()=> res.status(200).send({success: 1, trainer: course.trainer, trainee: trainees}))
+            .then(()=> res.status(200).send({success: 1, trainer: course.trainer, trainee: req.body.trainee}))
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })

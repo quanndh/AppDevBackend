@@ -48,7 +48,7 @@ userApiRouter.get("/:id", (req, res) => {
 
 userApiRouter.get("/select/:role", (req, res) => {
     userModel.find({role: req.params.role})
-    .select("-password -__v")
+    .select("-password -__v -role -course")
     .then(users => res.status(200).send({success: 1, data: users}))
     .catch(err => res.status(500).send({success:0, message: err}))
 })
@@ -134,14 +134,14 @@ userApiRouter.delete("/:id/:role", (req, res) => {
             userModel.find({
             role:{$in:['trainer', 'staff']}
             })
-            .select("-password -__v")
+            .select("-password -__v -role")
             .then(users => res.status(200).send({success: 1, data: users}))
             .catch(err => res.status(500).send({success: 0, message: err}))
         } else {
             userModel.find({
             role:{$in:['trainer', 'trainee']}
             })
-            .select("-password -__v")
+            .select("-password -__v -role")
             .then(users => res.status(200).send({success: 1, data: users}))
             .catch(err => res.status(500).send({success: 0, message: err}))
         }
