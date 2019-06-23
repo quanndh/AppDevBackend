@@ -2,6 +2,7 @@ const express = require("express");
 const Router = express.Router;
 const courseApiRouter = Router();
 const courseModel = require("./model");
+const userModel = require("../user/model");
 //CREATE
 courseApiRouter.post("/", (req, res) => {
     const {name, topic, trainer} = req.body;
@@ -41,26 +42,44 @@ courseApiRouter.get("/:id", (req, res) => {
 
 })
 
+courseApiRouter.get("/trainer/:id", (req, res) => {
+    userModel.findOne({_id: req.params.id}).select("-__v -password -course -role")
+    .then(trainer => {
+        console.log(trainer)
+        courseModel.find({trainer: trainer}).select("-__v")
+        .populate("trainer users", "-__v -password -course -role")
+        .populate("trainer users", "-__v -password -course -role")
+        .then(courses => {
+            console.log(courses)
+            res.status(200).send({success: 1, data: courses})
+        })
+        .catch(err => res.status(500).send({success: 0, message: err}))
+    })
+    .catch(err => res.status(500).send({success: 0, message: err}))
+    
+})
+
  
 
 //UPDATE
 //Add more trainee
 courseApiRouter.put("/:id", (req, res) => {
+    console.log(req.body.trainee)
     courseModel.findOne({_id : req.params.id})
     .then(course => {
-        // let trainees = course.trainee;
-        // for (var i = 0; i < req.body.trainee.length; i ++){
-        //     trainees.push(req.body.trainee[i])
-        // }
+        let trainees = course.trainee;
+        for (var i = 0; i < req.body.trainee.length; i ++){
+            trainees.push(req.body.trainee[i])
+        }
         courseModel.updateOne(
             {_id: req.params.id},
             {   
                 name: req.body.name,
                 topic: req.body.topic,
                 trainer: req.body.trainer,
-                trainee: req.body.trainee
+                trainee: trainees
             })
-            .then(()=> res.status(200).send({success: 1, trainer: course.trainer, trainee: req.body.trainee}))
+            .then(()=> res.status(200).send({success: 1, trainer: course.trainer, trainee: trainees}))
     })
     .catch(err => res.status(500).send({success: 0, message: err}))
 })
