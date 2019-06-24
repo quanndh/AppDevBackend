@@ -1,7 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
-const userModel = require("../user/model");
+const userModel = require("../Model/userModel");
 
 authRouter.post("/", (req, res) => {
     const {name, password} = req.body;

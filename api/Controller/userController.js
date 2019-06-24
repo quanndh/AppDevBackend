@@ -1,9 +1,9 @@
 const express = require("express");
 const Router = express.Router;
 const userApiRouter = Router();
-const userModel = require("./model");
+const userModel = require("../Model/userModel");
 const bcrypt = require("bcryptjs");
-const courseModel = require("../course/model")
+const courseModel = require("../Model/courseModel")
 //CREATE
 userApiRouter.post("/", (req, res) => {
     const {name, role, password} = req.body;

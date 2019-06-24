@@ -3,9 +3,9 @@ const Router = express.Router;
 
 const apiRouter = Router();
 
-const userApiRouter = require("./user/router");
-const authApiRouter = require("./auth/router");
-const courseApiRouter = require("./course/router");
+const userApiRouter = require("./Controller/userController");
+const authApiRouter = require("./Controller/authController");
+const courseApiRouter = require("./Controller/courseController");
 
 apiRouter.get("/", (req, res) => {
     res.send("hello");
