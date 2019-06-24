@@ -34,11 +34,28 @@ courseApiRouter.get("/", (req, res) => {
 //READ BY ID
 courseApiRouter.get("/:id", (req, res) => {
     courseModel.findOne({_id : req.params.id}).select("-__v")
-        .populate("trainer users", "-__v -password -role")
-        .populate("trainee users", "-__v -password -role")
+        .populate("trainer users", "-__v -password -role -course")
+        .populate("trainee users", "-__v -password -role -course")
         .then(course => res.status(200).send({success: 1, data: course}))
         .catch(err => res.status(500).send({success: 0, message: err}))
 
+})
+
+courseApiRouter.get("/trainer/:id", (req, res) => {
+    userModel.findOne({_id: req.params.id}).select("-__v -password -course -role")
+    .then(trainer => {
+        console.log(trainer)
+        courseModel.find({trainer: trainer}).select("-__v")
+        .populate("trainer users", "-__v -password -course -role")
+        .populate("trainer users", "-__v -password -course -role")
+        .then(courses => {
+            console.log(courses)
+            res.status(200).send({success: 1, data: courses})
+        })
+        .catch(err => res.status(500).send({success: 0, message: err}))
+    })
+    .catch(err => res.status(500).send({success: 0, message: err}))
+    
 })
 
  
@@ -46,6 +63,7 @@ courseApiRouter.get("/:id", (req, res) => {
 //UPDATE
 //Add more trainee
 courseApiRouter.put("/:id", (req, res) => {
+    console.log(req.body.trainee)
     courseModel.findOne({_id : req.params.id})
     .then(course => {
         let trainees = course.trainee;
